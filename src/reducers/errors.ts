@@ -8,9 +8,9 @@ const reducer = (state: string | null = null, action: any = {}) => {
         
         case ErrorActionTypes.RESET_ERRORS:
             return null
-
+ 
         default:
-            return null
+            return state
     }
 }
   

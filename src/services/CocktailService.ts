@@ -31,7 +31,8 @@ class CocktailService {
     public getMargaritas = (): Promise<any> => {
         return (async () => {
             // only fetch cocktails if we don't have them in the state
-            if(this.getState().cocktails.length !== 0) return 
+            const state = this.getState()
+            if(state.cocktails.length !== 0) return 
 
             try {
                 const res = await fetch(`${this.BASEURL}search.php?s=margarita`)
@@ -41,9 +42,8 @@ class CocktailService {
                     payload: json.drinks as ICocktail[]
                 }
                 this.dispatch(action)
-                this.retries = this.maxretries
+                this.resetErrors()
             } catch(error) {
-                console.log(typeof error)
                 const action: IFetchCocktailsFailedAction = {
                     type: CockTailActionTypes.FETCH_COCKTAILS_FAILED,
                     payload: {
@@ -59,6 +59,18 @@ class CocktailService {
             }
         })();
     }
+
+    public resetErrors = () => {
+        const state = this.getState()
+        if(state.errors !== null){
+            const resetErrorAction: IResetErrorAction = {
+                type: ErrorActionTypes.RESET_ERRORS
+            }
+            this.dispatch(resetErrorAction)
+            this.retries = this.maxretries
+        }
+    }
+
 }
 
 const CocktailServiceInstance = new CocktailService(BASE_URL, dispatch, getState, RETRY_COUNT)
