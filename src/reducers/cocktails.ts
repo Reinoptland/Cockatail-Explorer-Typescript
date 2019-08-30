@@ -2,8 +2,11 @@ import { ICocktail } from '../entities/cocktail'
 
 const reducer = (state: ICocktail[] | [] = [], action: any = {}) => {
     switch (action.type) {
-      default:
-        return state
+        case 'FETCH_COCKTAILS_SUCCESS':
+            return [...state, ...action.payload]
+
+        default:
+            return state
     }
 }
   

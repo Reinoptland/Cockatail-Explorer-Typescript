@@ -1,14 +1,27 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux'
+import { ICocktail } from '../../../entities/cocktail'
 
-interface State {
-    cocktails: any;
+
+interface Props {
+    cocktails: ICocktail[] | [];
+    dispatch: Dispatch
 }
 
-export default class CocktailDetails extends Component<{}, State> {
-    public state: State = { cocktails: null };
+class CocktailDetails extends Component<Props> {
+
+    public async componentDidMount(){
+        const res = await fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita')
+        const json = await res.json()
+        this.props.dispatch({
+            type: 'FETCH_COCKTAILS_SUCCESS',
+            payload: json.drinks
+        })
+    }
 
     public render() {
-        const { cocktails } = this.state
+        const { cocktails } = this.props
         return (
         <div className="cocktail">
             <h1>Cocktails</h1>
@@ -17,3 +30,11 @@ export default class CocktailDetails extends Component<{}, State> {
         );
     }
 }
+
+const mapStateToProps = (state: any) => {
+    return {
+        cocktails: state.cocktails
+    }
+}
+
+export default connect(mapStateToProps)(CocktailDetails)
