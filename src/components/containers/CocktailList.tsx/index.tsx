@@ -1,11 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component, ReactChild } from 'react'
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux'
 import { ICocktail } from '../../../entities/cocktail'
 
-
 interface Props {
-    cocktails: ICocktail[] | [];
+    cocktails: ICocktail[];
     dispatch: Dispatch
 }
 
@@ -25,7 +24,16 @@ class CocktailDetails extends Component<Props> {
         return (
         <div className="cocktail">
             <h1>Cocktails</h1>
-            {cocktails === null && <p>Loading...</p>}
+            {cocktails.length === 0 
+                ? <p>Loading...</p>
+                : cocktails.map(cocktail =>
+                    <div> 
+                        <h2>{cocktail.strDrink}</h2>
+                        <img src={cocktail.strDrinkThumb}/>
+                    </div>
+                )
+                
+            }
         </div>
         );
     }
