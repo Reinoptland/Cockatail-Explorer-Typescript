@@ -2,6 +2,7 @@ import React, { Component, ReactChild } from 'react'
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux'
 import { ICocktail } from '../../../entities/cocktail'
+import CocktailService from '../../../services/CocktailService'
 
 interface Props {
     cocktails: ICocktail[];
@@ -11,12 +12,7 @@ interface Props {
 class CocktailDetails extends Component<Props> {
 
     public async componentDidMount(){
-        const res = await fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita')
-        const json = await res.json()
-        this.props.dispatch({
-            type: 'FETCH_COCKTAILS_SUCCESS',
-            payload: json.drinks
-        })
+        CocktailService.getMargaritas()
     }
 
     public render() {

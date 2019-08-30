@@ -17,3 +17,6 @@ export interface IStore {
 }
 
 export default store
+
+export const dispatch = store.dispatch
+export const getState = store.getState
