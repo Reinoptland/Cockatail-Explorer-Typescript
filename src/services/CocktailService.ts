@@ -1,4 +1,4 @@
-import { baseUrl } from '../config/constants'
+import { BASE_URL, RETRY_COUNT } from '../config/constants'
 import { Dispatch } from 'redux'
 import { dispatch, getState } from '../config/store'
 import { 
@@ -6,44 +6,61 @@ import {
     IFetchCocktailsFailedAction,
     CockTailActionTypes
 } from '../actions/cocktails'
+import {
+    IResetErrorAction,
+    ErrorActionTypes
+} from '../actions/errors'
+
 import { ICocktail } from '../entities/cocktail';
 
 class CocktailService {
-    baseUrl: string
+    BASEURL: string
     dispatch: Dispatch
     getState: any
+    retries: number
+    maxretries: number
 
-    constructor(baseUrl: string, dispatch: Dispatch, getState: () => {}){
-        this.baseUrl = baseUrl
+    constructor(BASEURL: string, dispatch: Dispatch, getState: () => {}, RETRY_COUNT: number){
+        this.BASEURL = BASEURL
         this.dispatch = dispatch
         this.getState = getState
+        this.maxretries = RETRY_COUNT
+        this.retries = RETRY_COUNT
     }
 
     public getMargaritas = (): Promise<any> => {
         return (async () => {
-            // if(this.getState().cocktails !== 0) return 
+            // only fetch cocktails if we don't have them in the state
+            if(this.getState().cocktails.length !== 0) return 
 
             try {
-                const res = await fetch(`${this.baseUrl}search.php?s=margarita`)
+                const res = await fetch(`${this.BASEURL}search.php?s=margarita`)
                 const json = await res.json()
                 const action: IFetchCocktailsSuccesAction = {
                     type: CockTailActionTypes.FETCH_COCKTAILS_SUCCES,
                     payload: json.drinks as ICocktail[]
                 }
                 this.dispatch(action)
+                this.retries = this.maxretries
             } catch(error) {
+                console.log(typeof error)
                 const action: IFetchCocktailsFailedAction = {
                     type: CockTailActionTypes.FETCH_COCKTAILS_FAILED,
                     payload: {
-                        errormessage: error 
+                        errormessage: error.message
                     }
                 }
                 this.dispatch(action)
+
+                setTimeout(() => {
+                    this.retries = this.retries - 1
+                    this.getMargaritas()
+                }, 10000)
             }
         })();
     }
 }
 
-const CocktailServiceInstance = new CocktailService(baseUrl, dispatch, getState)
+const CocktailServiceInstance = new CocktailService(BASE_URL, dispatch, getState, RETRY_COUNT)
 
 export default CocktailServiceInstance
