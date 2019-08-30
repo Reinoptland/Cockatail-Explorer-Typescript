@@ -53,3 +53,5 @@ export interface ICocktail {
     strCreativeCommonsConfirmed: string,
     dateModified: string
 }
+
+export type ICocktailState = ICocktail[] | []

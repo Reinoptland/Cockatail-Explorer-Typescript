@@ -1,8 +1,9 @@
-import { ICocktail } from '../entities/cocktail'
+import { ICocktailState } from '../entities/cocktail'
+import { CockTailActionTypes } from '../actions/cocktails'
 
-const reducer = (state: ICocktail[] | [] = [], action: any = {}) => {
+const reducer = (state: ICocktailState = [], action: any = {}) => {
     switch (action.type) {
-        case 'FETCH_COCKTAILS_SUCCESS':
+        case CockTailActionTypes.FETCH_COCKTAILS_SUCCES:
             return [...state, ...action.payload]
 
         default:

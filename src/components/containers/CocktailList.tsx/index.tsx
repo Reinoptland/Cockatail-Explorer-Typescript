@@ -1,38 +1,41 @@
-import React, { Component, ReactChild } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux'
 import { ICocktail } from '../../../entities/cocktail'
+import CocktailService from '../../../services/CocktailService'
 
 interface Props {
     cocktails: ICocktail[];
     dispatch: Dispatch
+    errors: string
 }
 
-class CocktailDetails extends Component<Props> {
+class CocktailList extends Component<Props> {
 
     public async componentDidMount(){
-        const res = await fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita')
-        const json = await res.json()
-        this.props.dispatch({
-            type: 'FETCH_COCKTAILS_SUCCESS',
-            payload: json.drinks
-        })
+        CocktailService.getMargaritas()
     }
 
     public render() {
-        const { cocktails } = this.props
+        const { cocktails, errors } = this.props
         return (
         <div className="cocktail">
             <h1>Cocktails</h1>
             {cocktails.length === 0 
                 ? <p>Loading...</p>
                 : cocktails.map(cocktail =>
-                    <div> 
+                    <div key={cocktail.idDrink}> 
                         <h2>{cocktail.strDrink}</h2>
-                        <img src={cocktail.strDrinkThumb}/>
+                        <img 
+                            src={cocktail.strDrinkThumb}
+                            alt={cocktail.strDrink}
+                        />
                     </div>
                 )
                 
+            }
+            { errors && 
+                <h3 style={{ color: 'red' }}>{errors}</h3> 
             }
         </div>
         );
@@ -41,8 +44,9 @@ class CocktailDetails extends Component<Props> {
 
 const mapStateToProps = (state: any) => {
     return {
-        cocktails: state.cocktails
+        cocktails: state.cocktails,
+        errors: state.errors
     }
 }
 
-export default connect(mapStateToProps)(CocktailDetails)
+export default connect(mapStateToProps)(CocktailList)
